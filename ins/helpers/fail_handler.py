@@ -1,4 +1,4 @@
-from sch.helpers.decoder import check, checkIter
+from ins.helpers.decoder import check, checkIter
 FAIL_1 = "Failure: "
 FAIL_1_CHAR = "% "
 END_FAIL = "MARLLM0"

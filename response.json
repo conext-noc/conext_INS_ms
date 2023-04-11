@@ -1,0 +1,19 @@
+{
+  "error":"false|true",
+  "message":"success | error message",
+  "data":{
+    "name":"",
+    "contract":"",
+    "olt":"",
+    "frame":"",
+    "slot":"",
+    "port":"",
+    "onu_id":"",
+    "sn":"",
+    "plan_name":"",
+    "provider":"",
+    "temperature":"",
+    "power":"",
+    "admin_status":""
+  }
+}

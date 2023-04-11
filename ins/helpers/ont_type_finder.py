@@ -1,5 +1,5 @@
-from sch.helpers.decoder import check, decoder
-from sch.helpers.fail_handler import failChecker
+from ins.helpers.decoder import check, decoder
+from ins.helpers.fail_handler import failChecker
 
 ontTypeStart = "OntProductDescription    : "
 ontTypeEnd = "GPON"

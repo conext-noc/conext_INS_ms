@@ -1,0 +1,17 @@
+{
+  "type":"a|m (a: auto, m: manual)",
+  "data":{
+    "name_1":"",
+    "name_2":"",
+    "contract":"",
+    "olt":"",
+    "frame":"",
+    "slot":"",
+    "port":"",
+    "sn":"",
+    "device_type": "",
+    "assigned_public_ip":"",
+    "plan_name":"",
+    "provider":""
+  }
+}

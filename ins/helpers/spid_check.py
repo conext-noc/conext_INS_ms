@@ -1,7 +1,7 @@
 from time import sleep
-from sch.helpers.decoder import decoder, check, checkIter
-from sch.helpers.fail_handler import failChecker
-from sch.helpers.file_handler import data_to_dict
+from ins.helpers.decoder import decoder, check, checkIter
+from ins.helpers.fail_handler import failChecker
+from ins.helpers.file_handler import data_to_dict
 
 conditionSpidOnt = "CTRL_C to break"
 condition = "-----------------------------------------------------------------------------"
@@ -18,6 +18,14 @@ spidCheck = {
     "endStatus": "Label               :",
 }
 
+def spidCalc(data):
+    SPID = 12288*(int(data["slot"]) - 1) + 771 * \
+        int(data["port"]) + 3 * int(data["onu_id"])
+    return {
+        "I": SPID,
+        "P": SPID + 1,
+        "V": SPID + 2
+    }
 
 def ontSpid(comm, command, client):
     command(

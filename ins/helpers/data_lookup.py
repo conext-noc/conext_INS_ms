@@ -1,70 +1,49 @@
+from datetime import datetime
 from time import sleep
-from sch.helpers.fail_handler import failChecker
-from sch.helpers.file_handler import data_to_dict
-from sch.helpers.decoder import checkIter, decoder
-infoHeader = "NA,F/,S/P,ID,SN,control_flag,run_state,config_state,match_state,protect_side,NA"
-descHeader = "NA,F/,S/P,ID,NAME1,NAME2,NAME3,NAME4,NAME5,NAME6,NAME7,NA"
+from ins.helpers.decoder import check, checkIter, decoder
 
-condition = "-----------------------------------------------------------------------------"
+condition = (
+    "-----------------------------------------------------------------------------"
+)
 newCond = "----------------------------------------------------------------------------"
 newCondFSP = "F/S/P               : "
+newCondFSPEnd = "ONT NNI type"
 newCondSn = "Ont SN              : "
 newCondTime = "Ont autofind time   : "
 
 
-def data_lookup(comm, command, CONTRACT):
-    command(f'display ont info by-desc "{CONTRACT}" | no-more ')
-    sleep(4)
+def data_lookup(comm, command, data):
+    SN_NEW = data["sn"]
+    SN = None
+    FRAME = None
+    SLOT = None
+    PORT = None
+    client = []
+    command("display ont autofind all | no-more")
+    sleep(5)
     value = decoder(comm)
-    regex = checkIter(value, condition)
-    FAIL = failChecker(value)
-    client = {}
-    names = []
-    statuses = []
-    namesSTR = ""
-    statuesSTR = ""
-    if FAIL == None:
-        ttlPorts = len(regex) // 6
-        # Handling data
-        for segment in range(0, ttlPorts):
-            statuesSTR += value[regex[1 + 6*segment]
-                                [1] + 1:regex[2 + 6 * segment][0] - 1]
-            namesSTR += value[regex[3 + 6*segment]
-                              [1] + 1:regex[4 + 6 * segment][0] - 1]
-
-        # data conversion
-        names = data_to_dict(
-            "NA,frame/,slot/port,onu_id,first_name,last_name,contract", namesSTR)
-        statuses = data_to_dict(
-            "frame/,slot/port,onu_id,sn,state,status,match_state,config_state,x_state,NA", statuesSTR)
-        for name in names.copy():
-            if name.get("frame/") != "0/":
-                names.remove(name)
-        for status in statuses.copy():
-            if status.get("frame/") != "0/":
-                statuses.remove(status)
-
-        # data parsing
-        for (name, status) in zip(names, statuses):
-            client ={
-                "frame": "0",
-                "slot": name["slot/port"].split("/")[0],
-                "port": name["slot/port"].split("/")[1],
-                "onu_id": str(name["onu_id"])[:-2] if "." in str(name["onu_id"]) else str(name["onu_id"]),
-                "name": f'{name["first_name"]} {name["last_name"]} {str(name["contract"]).zfill(10)}',
-                "state": status["state"],
-                "status": status["status"],
-                "sn": status["sn"]
-            }
-            
-        # returns if data is ok
-        return {
-            "client": client,
-            "fail": FAIL
-        }
-        
-    # returns nothing if data fails to be fetched
-    return {
-        "client": None,
-        "fail": FAIL
-    }
+    regex = checkIter(value, newCond)
+    for ont in range(len(regex) - 1):
+        (_, s) = regex[ont]
+        (e, _) = regex[ont + 1]
+        result = value[s:e]
+        (_, sFSP) = check(result, newCondFSP).span()
+        (eFSP, _) = check(result, newCondFSPEnd).span()
+        (_, eSN) = check(result, newCondSn).span()
+        (_, eT) = check(result, newCondTime).span()
+        aSN = result[eSN : eSN + 16].replace("\n", "").replace(" ", "")
+        aFSP = result[sFSP : eFSP].replace("\n", "").replace(" ", "")
+        aT = result[eT : eT + 19].replace("\n", "")
+        t1 = datetime.strptime(aT, "%Y-%m-%d %H:%M:%S")
+        t2 = datetime.fromisoformat(str(datetime.now()))
+        clientTime = t2 - t1
+        client.append({"fsp": aFSP.replace("\r",""), "sn": aSN, "idx": ont + 1, "time": clientTime.days})
+    
+    for ont in client:
+        count = []
+        if SN_NEW == ont["sn"] and ont["time"] <= 10:
+            SN = ont["sn"]
+            FRAME = ont["fsp"].split("/")[0]
+            SLOT = ont["fsp"].split("/")[1]
+            PORT = ont["fsp"].split("/")[2]
+    return (SN, FRAME,SLOT,PORT)

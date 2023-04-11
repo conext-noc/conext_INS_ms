@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import generics
 from django.http import HttpResponse
-
-from sch.scripts.BC import clientFinder
+from ins.scripts.IX import confirm
+import json
 
 class CHECK(generics.GenericAPIView):
   def get(self, req):
@@ -18,16 +18,26 @@ class CHECK(generics.GenericAPIView):
     return HttpResponse(response_text, status=status_code)
 
 
-class SCH(generics.GenericAPIView):
-  def get(self, req):
+class INS(generics.GenericAPIView):
+  def post(self, req):
     if req.META['HTTP_CONEXT_KEY'] == "fiwjef-paxgox-9gydcY":
       status_code = 200
-      contract = req.query_params.get('contract')
-      olt = req.query_params.get('olt')
-      data = {"contract":contract, "olt":olt}
-      res = clientFinder(data)
-      response_data = {"message": "OK", "data": res}
-      return Response(response_data, status=status_code)
-      return Response("client_contract", status=200)
+      data = json.loads(req.body)
+      response = {
+        "error":None,
+        "message":None,
+        "data":None
+        }
+      if data["type"].lower() == "m":
+        response["data"] = data["data"]
+        response["data"]["temperature"] = "-"
+        response["data"]["power"] = "-"
+        response["data"]["admin_status"] = "-"
+        response["data"]["onu_id"] = "-"
+        response["error"] = False
+        response["message"] = "success, waiting for manual config"
+        return Response(response, status=status_code)
+      confirm(data["data"])
+      return Response({"message":"response_data"}, status=status_code)
     else:
       return HttpResponse("Bad Request to server", status=400)

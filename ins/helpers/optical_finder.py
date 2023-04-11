@@ -1,5 +1,5 @@
-from sch.helpers.decoder import decoder, check
-from sch.helpers.fail_handler import failChecker
+from ins.helpers.decoder import decoder, check
+from ins.helpers.fail_handler import failChecker
 
 conditionTemp = "Temperature\(C\)                         : "
 conditionPwr = "Rx optical power\(dBm\)                  : "
