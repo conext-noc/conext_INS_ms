@@ -5,25 +5,24 @@ from ins.helpers.fail_handler import failChecker
 
 
 def add_device(comm, command, client):
-    print(f"interface gpon {client['frame']}/{client['slot']}")
-    print(
+    command(f"interface gpon {client['frame']}/{client['slot']}")
+    command(
         f'ont add {client["port"]} sn-auth {client["sn"]} omci ont-lineprofile-id {client["wan"][0]["line_profile"]} ont-srvprofile-id {client["wan"][0]["srv_profile"]} desc "{client["name_1"]} {client["name_2"]} {client["contract"]}" '
     )
-    # value = decoder(comm)
-    # fail = failChecker(value)
+    value = decoder(comm)
+    fail = failChecker(value)
     fail = None
     if fail == None:
-        # (_, end) = check(value, "ONTID :").span()
-        # ID = value[end: end +
-        #            3].replace(" ", "").replace("\n", "").replace("\r", "")
-        ID = 5
-        print(
+        (_, end) = check(value, "ONTID :").span()
+        ID = value[end: end +
+                   3].replace(" ", "").replace("\n", "").replace("\r", "")
+        command(
             f'ont optical-alarm-profile {client["port"]} {ID} profile-name ALARMAS_OPTICAS'
         )
-        print(
+        command(
             f'ont alarm-policy {client["port"]} {ID} policy-name FAULT_ALARMS'
         )
-        print("quit")
+        command("quit")
         return (ID, fail)
     else: 
         return (None, fail)
@@ -32,23 +31,23 @@ def add_device(comm, command, client):
 def add_service(comm, command, client):
     client["wan"][0]["spid"] = spidCalc(client)["I"] if "_IP" not in client["plan_name"] else spidCalc(client)["P"]
 
-    print(f"interface gpon {client['frame']}/{client['slot']}")
+    command(f"interface gpon {client['frame']}/{client['slot']}")
     
     if client["device_type"].upper() == "B":
-      print(f" ont port native-vlan {client['port']} {client['onu_id']} eth 1 vlan {client['wan'][0]['vlan']} ")
+      command(f" ont port native-vlan {client['port']} {client['onu_id']} eth 1 vlan {client['wan'][0]['vlan']} ")
 
-    print(f"ont ipconfig {client['port']} {client['onu_id']} ip-index 2 dhcp vlan {client['wan'][0]['vlan']}") if "_IP" not in client["plan_name"] else print(f"ont ipconfig {client['port']} {client['onu_id']} ip-index 2 static ip-address {client['assigned_public_ip']} mask 255.255.255.128 gateway 181.232.181.129 pri-dns 9.9.9.9 slave-dns 149.112.112.112 vlan 102")
+    command(f"ont ipconfig {client['port']} {client['onu_id']} ip-index 2 dhcp vlan {client['wan'][0]['vlan']}") if "_IP" not in client["plan_name"] else command(f"ont ipconfig {client['port']} {client['onu_id']} ip-index 2 static ip-address {client['assigned_public_ip']} mask 255.255.255.128 gateway 181.232.181.129 pri-dns 9.9.9.9 slave-dns 149.112.112.112 vlan 102")
     
-    print(f"ont internet-config {client['port']} {client['onu_id']} ip-index 2")
+    command(f"ont internet-config {client['port']} {client['onu_id']} ip-index 2")
     
-    print(f"ont policy-route-config {client['port']} {client['onu_id']} profile-id 2")
+    command(f"ont policy-route-config {client['port']} {client['onu_id']} profile-id 2")
     
-    print("quit")
+    command("quit")
     
-    print(f"""service-port {client['wan'][0]['spid']} vlan {client['wan'][0]['vlan']} gpon {client['frame']}/{client['slot']}/{client['port']} ont {client['onu_id']} gemport {client["wan"][0]['gem_port']} multi-service user-vlan {client['wan'][0]['vlan']} tag-transform transparent inbound traffic-table index {client["wan"][0]["dba_profile"]} outbound traffic-table index {client["wan"][0]["dba_profile"]}""")
+    command(f"""service-port {client['wan'][0]['spid']} vlan {client['wan'][0]['vlan']} gpon {client['frame']}/{client['slot']}/{client['port']} ont {client['onu_id']} gemport {client["wan"][0]['gem_port']} multi-service user-vlan {client['wan'][0]['vlan']} tag-transform transparent inbound traffic-table index {client["wan"][0]["dba_profile"]} outbound traffic-table index {client["wan"][0]["dba_profile"]}""")
     
     
     sleep(10)
-    print(f"interface gpon {client['frame']}/{client['slot']}")
-    print(f"ont wan-config {client['port']} {client['onu_id']} ip-index 2 profile-id 0")
-    print("quit")
+    command(f"interface gpon {client['frame']}/{client['slot']}")
+    command(f"ont wan-config {client['port']} {client['onu_id']} ip-index 2 profile-id 0")
+    command("quit")
