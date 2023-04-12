@@ -1,7 +1,7 @@
-from time import sleep
 from ins.helpers.decoder import decoder, check, checkIter
 from ins.helpers.fail_handler import failChecker
 from ins.helpers.file_handler import data_to_dict
+from time import sleep
 
 conditionSpidOnt = "CTRL_C to break"
 condition = "-----------------------------------------------------------------------------"

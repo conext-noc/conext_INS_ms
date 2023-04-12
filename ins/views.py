@@ -1,15 +1,18 @@
-from rest_framework.response import Response
-from rest_framework import generics
 from django.http import HttpResponse
+from dotenv import load_dotenv
 from ins.scripts.IX import confirm
 import json
+from rest_framework.response import Response
+from rest_framework import generics
+import os
+load_dotenv()
 
 class CHECK(generics.GenericAPIView):
   def get(self, req):
     content_type = req.META.get('HTTP_CONTENT_TYPE')
     status_code = None
     response_text = ""
-    if req.META['HTTP_CONEXT_KEY'] == "fiwjef-paxgox-9gydcY":
+    if req.META['HTTP_CONEXT_KEY'] == os.environ["CONEXT_KEY"]:
       status_code = 200
       response_text = "ms_running"
     else:
@@ -20,7 +23,7 @@ class CHECK(generics.GenericAPIView):
 
 class INS(generics.GenericAPIView):
   def post(self, req):
-    if req.META['HTTP_CONEXT_KEY'] == "fiwjef-paxgox-9gydcY":
+    if req.META['HTTP_CONEXT_KEY'] == os.environ["CONEXT_KEY"]:
       status_code = 200
       data = json.loads(req.body)
       response = {
@@ -37,7 +40,7 @@ class INS(generics.GenericAPIView):
         response["error"] = False
         response["message"] = "success, waiting for manual config"
         return Response(response, status=status_code)
-      confirm(data["data"])
-      return Response({"message":"response_data"}, status=status_code)
+      result = confirm(data["data"])
+      return Response(result, status=status_code)
     else:
       return HttpResponse("Bad Request to server", status=400)

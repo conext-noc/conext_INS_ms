@@ -1,7 +1,7 @@
-from time import sleep
-from ins.helpers.spid_check import spidCalc
 from ins.helpers.decoder import decoder, check
 from ins.helpers.fail_handler import failChecker
+from ins.helpers.spid_check import spidCalc
+from time import sleep
 
 
 def add_device(comm, command, client):

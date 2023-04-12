@@ -1,6 +1,6 @@
 from datetime import datetime
-from time import sleep
 from ins.helpers.decoder import check, checkIter, decoder
+from time import sleep
 
 condition = (
     "-----------------------------------------------------------------------------"
