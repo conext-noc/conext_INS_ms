@@ -17,11 +17,11 @@ def confirm(client):
     
     (client["sn"], client["frame"], client["slot"], client["port"]) = data_lookup(comm, command, client)
     client["wan"] = [{}]
-    client["wan"][0]["vlan"] = PLANS[client["plan_name"]]["vlan"]
-    client["wan"][0]["gem_port"] = PLANS[client["plan_name"]]["gem_port"]
-    client["wan"][0]["line_profile"] = PLANS[client["plan_name"]]["line_profile"]
-    client["wan"][0]["dba_profile"] = PLANS[client["plan_name"]]["dba_profile"]
-    client["wan"][0]["srv_profile"] = PLANS[client["plan_name"]]["srv_profile"]
+    client["wan"][0]["vlan"] = PLANS[client["plan_name"].upper()]["vlan"]
+    client["wan"][0]["gem_port"] = PLANS[client["plan_name"].upper()]["gem_port"]
+    client["wan"][0]["line_profile"] = PLANS[client["plan_name"].upper()]["line_profile"]
+    client["wan"][0]["dba_profile"] = PLANS[client["plan_name"].upper()]["dba_profile"]
+    client["wan"][0]["srv_profile"] = PLANS[client["plan_name"].upper()]["srv_profile"]
     (client["onu_id"], client["fail"]) = add_device(comm,command, client)
     
     if client["fail"] != None:

@@ -29,7 +29,7 @@ def add_device(comm, command, client):
 
 
 def add_service(comm, command, client):
-    client["wan"][0]["spid"] = spidCalc(client)["I"] if "_IP" not in client["plan_name"] else spidCalc(client)["P"]
+    client["wan"][0]["spid"] = spidCalc(client)["I"] if "_IP" not in client["plan_name"].upper() else spidCalc(client)["P"]
 
     command(f"interface gpon {client['frame']}/{client['slot']}")
     
