@@ -7,7 +7,7 @@ from time import sleep
 def add_device(comm, command, client):
     command(f"interface gpon {client['frame']}/{client['slot']}")
     command(
-        f'ont add {client["port"]} sn-auth {client["sn"]} omci ont-lineprofile-id {client["wan"][0]["line_profile"]} ont-srvprofile-id {client["wan"][0]["srv_profile"]} desc "{client["name_1"]} {client["name_2"]} {client["contract"]}" '
+        f'ont add {client["port"]} sn-auth {client["sn"]} omci ont-lineprofile-id {client["wan"][0]["line_profile"]} ont-srvprofile-id {client["wan"][0]["srv_profile"]} desc "{client["name_1"].upper().replace(" ","_")} {client["name_2"].upper().replace(" ","_")} {client["contract"]}" '
     )
     value = decoder(comm)
     fail = failChecker(value)
