@@ -5,7 +5,6 @@ from ins.helpers.data_lookup import data_lookup
 from ins.helpers.mapper import PLANS
 from ins.helpers.optical_finder import opticalValues
 from ins.helpers.ont_type_finder import typeCheck
-from ins.scripts.add_db_client import add_to_db
 from ins.scripts.ssh import ssh
 
 
@@ -42,7 +41,7 @@ def confirm(client):
       "data":client
       }
     add_service(comm, command, client)
-    add_to_db(client)
+    
     quit()
     return {
       "error": False,
