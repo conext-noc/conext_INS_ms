@@ -9,15 +9,8 @@ load_dotenv()
 
 class CHECK(generics.GenericAPIView):
   def get(self, req):
-    content_type = req.META.get('HTTP_CONTENT_TYPE')
-    status_code = None
-    response_text = ""
-    if req.META['HTTP_CONEXT_KEY'] == os.environ["CONEXT_KEY"]:
-      status_code = 200
-      response_text = "ms_running"
-    else:
-      status_code = 400
-      response_text = "Bad Request to server"
+    status_code = 200
+    response_text = "ms_running"
     return HttpResponse(response_text, status=status_code)
 
 
