@@ -7,14 +7,11 @@ from rest_framework import generics
 import os
 load_dotenv()
 
-class CHECK(generics.GenericAPIView):
+class INS(generics.GenericAPIView):
   def get(self, req):
     status_code = 200
     response_text = "ms_running"
     return HttpResponse(response_text, status=status_code)
-
-
-class INS(generics.GenericAPIView):
   def post(self, req):
     if req.META['HTTP_CONEXT_KEY'] == os.environ["CONEXT_KEY"]:
       status_code = 200

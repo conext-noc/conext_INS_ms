@@ -1,7 +1,6 @@
 from django.urls import path
-from .views import INS,CHECK
+from .views import INS
 
 urlpatterns = [
-    path("", INS.as_view()),
-    path("check/", CHECK.as_view()),
+    path("", INS.as_view())
 ]
