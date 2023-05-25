@@ -31,6 +31,14 @@ DEBUG = True
 ALLOWED_HOSTS = ["ins-ms-conext.us-west-2.elasticbeanstalk.com", "ins.conext.net.ve", "127.0.0.1", "localhost"]
 
 
+# CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://conext.net.ve",
+    "http://localhost:8000",
+]
+CORS_ALLOW_CREDENTIALS = True
+
 # Application definition
 
 INSTALLED_APPS = [
