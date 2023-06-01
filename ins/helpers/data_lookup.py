@@ -1,6 +1,6 @@
+from time import sleep
 from datetime import datetime
 from ins.helpers.decoder import check, checkIter, decoder
-from time import sleep
 
 condition = (
     "-----------------------------------------------------------------------------"
@@ -20,7 +20,7 @@ def data_lookup(comm, command, data):
     PORT = None
     client = []
     command("display ont autofind all | no-more")
-    sleep(5)
+    sleep(4)
     value = decoder(comm)
     regex = checkIter(value, newCond)
     for ont in range(len(regex) - 1):
@@ -32,18 +32,24 @@ def data_lookup(comm, command, data):
         (_, eSN) = check(result, newCondSn).span()
         (_, eT) = check(result, newCondTime).span()
         aSN = result[eSN : eSN + 16].replace("\n", "").replace(" ", "")
-        aFSP = result[sFSP : eFSP].replace("\n", "").replace(" ", "")
+        aFSP = result[sFSP:eFSP].replace("\n", "").replace(" ", "")
         aT = result[eT : eT + 19].replace("\n", "")
         t1 = datetime.strptime(aT, "%Y-%m-%d %H:%M:%S")
         t2 = datetime.fromisoformat(str(datetime.now()))
         clientTime = t2 - t1
-        client.append({"fsp": aFSP.replace("\r",""), "sn": aSN, "idx": ont + 1, "time": clientTime.days})
-    
+        client.append(
+            {
+                "fsp": aFSP.replace("\r", ""),
+                "sn": aSN,
+                "idx": ont + 1,
+                "time": clientTime.days,
+            }
+        )
+
     for ont in client:
-        count = []
         if SN_NEW == ont["sn"] and ont["time"] <= 10:
             SN = ont["sn"]
             FRAME = ont["fsp"].split("/")[0]
             SLOT = ont["fsp"].split("/")[1]
             PORT = ont["fsp"].split("/")[2]
-    return (SN, FRAME,SLOT,PORT)
+    return (SN, FRAME, SLOT, PORT)
