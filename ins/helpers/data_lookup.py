@@ -20,7 +20,7 @@ def data_lookup(comm, command, data):
     PORT = None
     client = []
     command("display ont autofind all | no-more")
-    sleep(4)
+    sleep(1)
     value = decoder(comm)
     regex = checkIter(value, newCond)
     for ont in range(len(regex) - 1):

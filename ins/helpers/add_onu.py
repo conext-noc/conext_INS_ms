@@ -1,4 +1,3 @@
-from time import sleep
 from ins.helpers.decoder import decoder, check
 from ins.helpers.fail_handler import failChecker
 from ins.helpers.spid_check import spidCalc
@@ -52,8 +51,6 @@ def add_service(comm, command, client):
     command(
         f"""service-port {client['wan'][0]['spid']} vlan {client['wan'][0]['vlan']} gpon {client['frame']}/{client['slot']}/{client['port']} ont {client['onu_id']} gemport {client["wan"][0]['gem_port']} multi-service user-vlan {client['wan'][0]['vlan']} tag-transform transparent inbound traffic-table index {client["wan"][0]["dba_profile"]} outbound traffic-table index {client["wan"][0]["dba_profile"]}"""
     )
-
-    sleep(7)
     command(f"interface gpon {client['frame']}/{client['slot']}")
     command(
         f"ont wan-config {client['port']} {client['onu_id']} ip-index 2 profile-id 0"
