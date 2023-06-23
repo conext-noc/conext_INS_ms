@@ -1,6 +1,6 @@
-from time import sleep
 from datetime import datetime
-from ins.helpers.decoder import check, checkIter, decoder
+from time import sleep
+from helpers.utils.decoder import check, check_iter, decoder
 
 condition = (
     "-----------------------------------------------------------------------------"
@@ -12,27 +12,25 @@ newCondSn = "Ont SN              : "
 newCondTime = "Ont autofind time   : "
 
 
-def data_lookup(comm, command, data):
-    SN_NEW = data["sn"]
-    SN = None
-    FRAME = None
-    SLOT = None
-    PORT = None
+def new_lookup(comm, command, SN_NEW):
+    value = decoder(comm)
+    SN_FINAL = None
+    FSP_FINAL = None
     client = []
     command("display ont autofind all | no-more")
-    sleep(1)
+    sleep(4)
     value = decoder(comm)
-    regex = checkIter(value, newCond)
+    regex = check_iter(value, newCond)
     for ont in range(len(regex) - 1):
         (_, s) = regex[ont]
         (e, _) = regex[ont + 1]
         result = value[s:e]
         (_, sFSP) = check(result, newCondFSP).span()
-        (eFSP, _) = check(result, newCondFSPEnd).span()
+        # (eFSP, _) = check(result, newCondFSPEnd).span()
         (_, eSN) = check(result, newCondSn).span()
         (_, eT) = check(result, newCondTime).span()
         aSN = result[eSN : eSN + 16].replace("\n", "").replace(" ", "")
-        aFSP = result[sFSP:eFSP].replace("\n", "").replace(" ", "")
+        aFSP = result[sFSP : sFSP + 7].replace("\n", "").replace(" ", "")
         aT = result[eT : eT + 19].replace("\n", "")
         t1 = datetime.strptime(aT, "%Y-%m-%d %H:%M:%S")
         t2 = datetime.fromisoformat(str(datetime.now()))
@@ -48,8 +46,6 @@ def data_lookup(comm, command, data):
 
     for ont in client:
         if SN_NEW == ont["sn"] and ont["time"] <= 10:
-            SN = ont["sn"]
-            FRAME = ont["fsp"].split("/")[0]
-            SLOT = ont["fsp"].split("/")[1]
-            PORT = ont["fsp"].split("/")[2]
-    return (SN, FRAME, SLOT, PORT)
+            SN_FINAL = ont["sn"]
+            FSP_FINAL = ont["fsp"]
+    return (SN_FINAL, FSP_FINAL)
