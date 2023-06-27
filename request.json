@@ -1,17 +1,14 @@
 {
-  "type":"a|m (a: auto, m: manual)",
+  "type":"a",
   "data":{
-    "name_1":"",
-    "name_2":"",
-    "contract":"",
-    "olt":"",
-    "frame":"",
-    "slot":"",
-    "port":"",
-    "sn":"",
-    "device_type": "",
+    "name_1":"REYDI",
+    "name_2":"HERNANDEZ",
+    "contract":"0000006666",
+    "olt":"1",
+    "sn":"485754430B0A32A9",
+    "device_type": "B",
     "assigned_public_ip":"",
-    "plan_name":"",
-    "provider":""
+    "plan_name":"OZ_PLUS_1",
+    "provider":"INTER"
   }
 }

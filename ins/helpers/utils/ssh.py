@@ -1,24 +1,26 @@
+import os
 from time import sleep
 import paramiko
-from helpers.handlers.sheets import get_creds
-from helpers.handlers.printer import log
+from dotenv import load_dotenv
+from ins.helpers.utils.decoder import decoder
+
+load_dotenv()
 
 
-def ssh(ip, debugging):
+def ssh(ip):
     count = 1
-    delay = 0.1
+    delay = 0
     conn = paramiko.SSHClient()
     conn.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     comm = None
     cont = True
-    creds = get_creds()
 
     # Handling multiple SSH sessions
     while cont and count <= 3:
         try:
-            username = creds[count - 1][f"user_{count}"]
-            password = creds[count - 1][f"password_{count}"]
-            port = 22
+            username = os.environ[f"user_{count}"]
+            password = os.environ[f"password_{count}"]
+            port = os.environ["port"]
             conn.connect(ip, port, username, password)
             comm = conn.invoke_shell()
             cont = False
@@ -34,24 +36,18 @@ def ssh(ip, debugging):
         sleep(delay)
 
     def command(cmd):
+        print(cmd)
         comm.send(cmd)
         sleep(delay)
-        if debugging:
-            log(
-                f"""
-{cmd}""",
-                "info",
-            )
         enter()
 
     def quit_ssh():
         conn.close()
 
-    if ip in ["181.232.180.5", "181.232.180.6", "181.232.180.7"]:
-        command("enable")
-        command("config")
-        command("scroll 512")
-    else:
-        command("sys")
+    command("enable")
+    command("config")
+    command("scroll 512")
+    sleep(2)
+    _ = decoder(comm)
 
     return (comm, command, quit_ssh)

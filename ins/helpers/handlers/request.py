@@ -2,7 +2,7 @@ import os
 import json
 from dotenv import load_dotenv
 import requests
-from helpers.constants import definitions
+from ins.helpers.constants import definitions
 
 domain = definitions.domain
 headers = definitions.headers

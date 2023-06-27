@@ -1,7 +1,7 @@
 from time import sleep
-from helpers.utils.decoder import decoder, check
-from helpers.handlers.fail import fail_checker
-from helpers.constants.regex_conditions import condition_onu_pwr, condition_onu_temp
+from ins.helpers.utils.decoder import decoder, check
+from ins.helpers.handlers.fail import fail_checker
+from ins.helpers.constants.regex_conditions import condition_onu_pwr, condition_onu_temp
 
 
 def optical_values(comm, command, data, show):

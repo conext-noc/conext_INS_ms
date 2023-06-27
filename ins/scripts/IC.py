@@ -1,7 +1,7 @@
-from helpers.utils.ssh import ssh
-from helpers.handlers import request, spid, add_onu
-from helpers.finder import optical, last_down_onu, device_type, new_onu
-from helpers.constants import definitions
+from ins.helpers.utils.ssh import ssh
+from ins.helpers.handlers import request, add_onu, dict_filler, delete
+from ins.helpers.finder import optical, device_type, new_onu
+from ins.helpers.constants import definitions
 
 # FUNCTION IMPORT DEFINITIONS
 db_request = request.db_request
@@ -9,27 +9,32 @@ add_service = add_onu.add_service
 add_client = add_onu.add_client
 optical_values = optical.optical_values
 new_lookup = new_onu.new_lookup
-calculate_spid = spid.calculate_spid
 endpoints = definitions.endpoints
 payload_add = definitions.payload_add
-down_values = last_down_onu.down_values
 client_place_holder = definitions.client_place_holder
 client_payload = definitions.client_payload
 type_finder = device_type.type_finder
 olt_devices = definitions.olt_devices
+filler = dict_filler.filler
+delete_onu = delete.delete_onu
 
 
 def client_install(data):
+    message = "success"
     device = data["olt"]
     (comm, command, quit_ssh) = ssh(olt_devices[device])
+    data["olt"] = int(data["olt"])
     client = client_place_holder.copy()
+    client.update(data)
+
     NEW_SN = data["sn"]
     (client["sn"], client["fsp"]) = new_lookup(comm, command, NEW_SN)
     if client["sn"] is None:
         quit_ssh()
+        message = (f"Serial {data['sn']} no esta conectado a la olt {device}",)
         return {
             "error": True,
-            "message": f"Serial {data['sn']} no esta conectado a la olt {device}",
+            "message": message,
             "client": None,
         }
     client["frame"] = int(client["fsp"].split("/")[0])
@@ -43,9 +48,10 @@ def client_install(data):
 
     if client["plan_name"] not in plan_lists:
         quit_ssh()
+        message = f"Plan {data['plan_name']} no esta registrado en la OLT"
         return {
             "error": True,
-            "message": f"Plan {data['plan_name']} no esta registrado en la OLT",
+            "message": message,
             "client": None,
         }
 
@@ -65,13 +71,13 @@ def client_install(data):
     (client["onu_id"], client["fail"]) = add_client(comm, command, client)
     (client["temp"], client["pwr"]) = optical_values(comm, command, client, True)
 
-    if float(client["pwr"]) <= -27.00:
-        command(f'interface gpon {client["frame"]} {client["slot"]}')
-        command(f'ont delete {client["port"]} {client["onu_id"]}')
+    if client["pwr"] is None or float(client["pwr"]) <= -27.00:
+        delete_onu(comm, command, client)
         quit_ssh()
+        message = f"Potencia de cliente excede limite de -27dBm, potencia @ {client['pwr']}, eliminando a cliente de OLT"
         return {
             "error": True,
-            "message": f"Potencia de cliente excede limite de -27dBm, potencia @ {client['pwr']}, eliminando a cliente de OLT",
+            "message": message,
             "client": client,
         }
 
@@ -82,7 +88,7 @@ def client_install(data):
     for key in client_payload:
         client_payload[key] = client[key]
 
-    client_payload["olt"] = device
+    client_payload["olt"] = int(device)
     client_payload["fsp"] = f'{client["frame"]}/{client["slot"]}/{client["port"]}'
     client_payload[
         "fspi"
@@ -93,13 +99,10 @@ def client_install(data):
     payload_add["data"] = client_payload.copy()
     req = db_request(endpoints["add_client"], payload_add)
     if req["error"]:
-        print("an error occurred adding to db")
-    else:
-        print("successfully added client to db")
-
+        message = "an error occurred adding to db"
     quit_ssh()
     return {
         "error": False,
-        "message": "success",
+        "message": message,
         "client": client,
     }

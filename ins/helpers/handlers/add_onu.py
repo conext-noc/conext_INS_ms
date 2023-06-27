@@ -1,9 +1,7 @@
 from time import sleep
-
-from helpers.handlers.printer import log, inp
-from helpers.utils.decoder import decoder, check
-from helpers.handlers.spid import calculate_spid
-from helpers.handlers.fail import fail_checker
+from ins.helpers.utils.decoder import decoder, check
+from ins.helpers.handlers.spid import calculate_spid
+from ins.helpers.handlers.fail import fail_checker
 
 
 def add_client(comm, command, data):
@@ -23,7 +21,7 @@ def add_client(comm, command, data):
     )
     command(f'ont alarm-policy {data["port"]} {ID} policy-name FAULT_ALARMS')
     command("quit")
-    return (ID, fail)
+    return (int(ID), fail)
 
 
 def add_service(command, data):
@@ -33,21 +31,13 @@ def add_service(command, data):
         else calculate_spid(data)["P"]
     )
 
-    log(f'El SPID que se le agregara al cliente es : {data["wan"][0]["spid"]}', "ok")
-
     command(f"interface gpon {data['frame']}/{data['slot']}")
 
-    add_vlan = inp("Se agregara vlan al puerto? [Y | N] : ")
-
     command(
-        f" ont port native-vlan {data['port']} {data['onu_id']} eth 1 vlan {data['wan'][0]['vlan']} "
-    ) if add_vlan == "Y" else None
+        f"ont port native-vlan {data['port']} {data['onu_id']} eth 1 vlan {data['wan'][0]['vlan']}"
+    ) if data["device_type"] == "B" else None
 
-    IPADD = (
-        inp("Ingrese la IPv4 Publica del cliente : ")
-        if "_IP" in data["plan_name"]
-        else None
-    )
+    IPADD = data["assigned_public_ip"] if "_IP" in data["plan_name"] else None
 
     command(
         f"ont ipconfig {data['port']} {data['onu_id']} ip-index 2 dhcp vlan {data['wan'][0]['vlan']}"

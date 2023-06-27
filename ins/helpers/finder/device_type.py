@@ -1,7 +1,7 @@
 from time import sleep
-from helpers.utils.decoder import check, decoder
-from helpers.handlers.fail import fail_checker
-from helpers.constants.definitions import ont_type_start, ont_type_end
+from ins.helpers.utils.decoder import check, decoder
+from ins.helpers.handlers.fail import fail_checker
+from ins.helpers.constants.definitions import ont_type_start, ont_type_end
 
 
 def type_finder(comm, command, data):

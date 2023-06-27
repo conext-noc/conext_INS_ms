@@ -1,6 +1,6 @@
 from datetime import datetime
 from time import sleep
-from helpers.utils.decoder import check, check_iter, decoder
+from ins.helpers.utils.decoder import check, check_iter, decoder
 
 condition = (
     "-----------------------------------------------------------------------------"
@@ -13,12 +13,11 @@ newCondTime = "Ont autofind time   : "
 
 
 def new_lookup(comm, command, SN_NEW):
-    value = decoder(comm)
     SN_FINAL = None
     FSP_FINAL = None
     client = []
     command("display ont autofind all | no-more")
-    sleep(4)
+    sleep(5)
     value = decoder(comm)
     regex = check_iter(value, newCond)
     for ont in range(len(regex) - 1):
@@ -26,11 +25,11 @@ def new_lookup(comm, command, SN_NEW):
         (e, _) = regex[ont + 1]
         result = value[s:e]
         (_, sFSP) = check(result, newCondFSP).span()
-        # (eFSP, _) = check(result, newCondFSPEnd).span()
+        (eFSP, _) = check(result, newCondFSPEnd).span()
         (_, eSN) = check(result, newCondSn).span()
         (_, eT) = check(result, newCondTime).span()
         aSN = result[eSN : eSN + 16].replace("\n", "").replace(" ", "")
-        aFSP = result[sFSP : sFSP + 7].replace("\n", "").replace(" ", "")
+        aFSP = result[sFSP : eFSP - 1].replace("\n", "").replace(" ", "")
         aT = result[eT : eT + 19].replace("\n", "")
         t1 = datetime.strptime(aT, "%Y-%m-%d %H:%M:%S")
         t2 = datetime.fromisoformat(str(datetime.now()))
@@ -43,7 +42,6 @@ def new_lookup(comm, command, SN_NEW):
                 "time": clientTime.days,
             }
         )
-
     for ont in client:
         if SN_NEW == ont["sn"] and ont["time"] <= 10:
             SN_FINAL = ont["sn"]
