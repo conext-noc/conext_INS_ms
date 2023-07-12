@@ -19,7 +19,8 @@ filler = dict_filler.filler
 delete_onu = delete.delete_onu
 
 
-def client_install(data):
+def client_install(data, is_noc):
+    message_noc = None
     message = "success"
     device = data["olt"]
     (comm, command, quit_ssh) = ssh(olt_devices[device])
@@ -71,7 +72,7 @@ def client_install(data):
     (client["onu_id"], client["fail"]) = add_client(comm, command, client)
     (client["temp"], client["pwr"]) = optical_values(comm, command, client, True)
 
-    if client["pwr"] is None or float(client["pwr"]) <= -27.00:
+    if not is_noc and (client["pwr"] is None or float(client["pwr"]) <= -27.00):
         delete_onu(comm, command, client)
         quit_ssh()
         message = f"Potencia de cliente excede limite de -27dBm, potencia @ {client['pwr']}, eliminando a cliente de OLT"
@@ -80,6 +81,11 @@ def client_install(data):
             "message": message,
             "client": client,
         }
+
+    if is_noc and (client["pwr"] is None or float(client["pwr"]) <= -27.00):
+        message_noc = (
+            f"Potencia de cliente excede limite de -27dBm, potencia @ {client['pwr']}"
+        )
 
     client["device"] = type_finder(comm, command, client)
 
@@ -101,6 +107,8 @@ def client_install(data):
     if req["error"]:
         message = "an error occurred adding to db"
     quit_ssh()
+    if message_noc is not None:
+        message = message + "[NOC]: " + message_noc
     return {
         "error": False,
         "message": message,
