@@ -36,14 +36,31 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
-
-# CORS
+# USE OF CORS
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://conext.net.ve",
     "http://localhost:8000",
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+CORS_ALLOW_HEADERS = [
+    "Accept",
+    "Accept-Language",
+    "Content-Language",
+    "Content-Type",
+]
 
 # Application definition
 
@@ -67,6 +84,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "ms_ins.urls"

@@ -3,5 +3,5 @@ from .views import INS, INSDashboard
 
 urlpatterns = [
     path("", INS.as_view()),
-    path("install-dashboard", INSDashboard.as_view()),
+    path("dashboard", INSDashboard.as_view()),
 ]
