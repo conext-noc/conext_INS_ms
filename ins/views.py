@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.http import HttpResponse
 from dotenv import load_dotenv
 from ins.scripts.IC import client_install
+from ins.scripts.new_onus import new_onus
 
 load_dotenv()
 
@@ -41,5 +42,14 @@ class INSDashboard(generics.GenericAPIView):
 
         if data["API_KEY"] == os.environ["API_KEY"]:
             result = client_install(data["data"], True)
+            return Response(result, status=200)
+        return HttpResponse("Bad Request to server", status=400)
+
+
+class NewOnus(generics.GenericAPIView):
+    def post(self, req):
+        data = req.data
+        if data["API_KEY"] == os.environ["API_KEY"]:
+            result = new_onus(data["olt"])
             return Response(result, status=200)
         return HttpResponse("Bad Request to server", status=400)
