@@ -38,9 +38,7 @@ def new_lookup(comm, command, SN_NEW):
             "idx": ont + 1,
             "time": clientTime.days,
         }
-        print(data)
         client.append(data)
-    print(client)
     for ont in client:
         if SN_NEW == ont["sn"] and ont["time"] <= 10:
             SN_FINAL = ont["sn"]
