@@ -39,7 +39,6 @@ class INSDashboard(generics.GenericAPIView):
 
     def post(self, req):
         data = req.data
-
         if data["API_KEY"] == os.environ["API_KEY"]:
             result = client_install(data["data"], True)
             return Response(result, status=200)

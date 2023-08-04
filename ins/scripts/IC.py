@@ -1,4 +1,4 @@
-from ins.helpers.utils.ssh import ssh
+from ins.scripts.ssh import ssh
 from ins.helpers.handlers import request, add_onu, dict_filler, delete
 from ins.helpers.finder import optical, device_type, new_onu
 from ins.helpers.constants import definitions

@@ -1,10 +1,7 @@
-from datetime import datetime
 from time import sleep
+from datetime import datetime
 from ins.helpers.utils.decoder import check, check_iter, decoder
 
-condition = (
-    "-----------------------------------------------------------------------------"
-)
 newCond = "----------------------------------------------------------------------------"
 newCondFSP = "F/S/P               : "
 newCondFSPEnd = "ONT NNI type"
@@ -13,6 +10,7 @@ newCondTime = "Ont autofind time   : "
 
 
 def new_lookup(comm, command, SN_NEW):
+    _ = decoder(comm)
     SN_FINAL = None
     FSP_FINAL = None
     client = []
@@ -34,14 +32,15 @@ def new_lookup(comm, command, SN_NEW):
         t1 = datetime.strptime(aT, "%Y-%m-%d %H:%M:%S")
         t2 = datetime.fromisoformat(str(datetime.now()))
         clientTime = t2 - t1
-        client.append(
-            {
-                "fsp": aFSP.replace("\r", ""),
-                "sn": aSN,
-                "idx": ont + 1,
-                "time": clientTime.days,
-            }
-        )
+        data = {
+            "fsp": aFSP.replace("\r", ""),
+            "sn": aSN,
+            "idx": ont + 1,
+            "time": clientTime.days,
+        }
+        print(data)
+        client.append(data)
+    print(client)
     for ont in client:
         if SN_NEW == ont["sn"] and ont["time"] <= 10:
             SN_FINAL = ont["sn"]

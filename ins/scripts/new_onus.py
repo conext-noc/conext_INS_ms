@@ -1,7 +1,7 @@
 from datetime import datetime
 from time import sleep
 from ins.helpers.utils.decoder import check, check_iter, decoder
-from ins.helpers.utils.ssh import ssh
+from ins.scripts.ssh import ssh
 from ins.helpers.constants.definitions import olt_devices
 
 condition = (
