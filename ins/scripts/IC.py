@@ -89,12 +89,10 @@ def client_install(data, is_noc):
 
     client["device"] = type_finder(comm, command, client)
     client["fspi"] = f'{client["fsp"]}/{client["onu_id"]}'
-    client["spid"] = client["wan"][0]["spid"]
     client["vlan"] = client["wan"][0]["vlan"]
     client["plan"] = client["wan"][0]["plan_name"]
     client["status"] = "online"
     client["state"] = "active"
-
     add_service(command, client)
 
     for key in client_payload:
