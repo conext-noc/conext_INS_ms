@@ -40,7 +40,13 @@ ALLOWED_HOSTS = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://conext.net.ve",
+    "conext.net.ve",
+    "http://www.conext.net.ve",
+    "www.conext.net.ve",
+    "https://dashboard-staging-drab.vercel.app/auth",
+    "dashboard-staging-drab.vercel.app/auth",
     "http://localhost:8000",
+    "*"
 ]
 CORS_ALLOW_CREDENTIALS = True
 
