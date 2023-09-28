@@ -87,7 +87,9 @@ def client_install(data, is_noc):
             f"Potencia de cliente excede limite de -27dBm, potencia @ {client['pwr']}"
         )
 
-    client["device"] = type_finder(comm, command, client)
+    (client["device"], client["vendor"]) = type_finder(comm, command, client)
+    if client["vendor"] == "BDCM":
+        client['device'] = client['vendor']
     client["fspi"] = f'{client["fsp"]}/{client["onu_id"]}'
     client["vlan"] = client["wan"][0]["vlan"]
     client["plan"] = client["wan"][0]["plan_name"]
